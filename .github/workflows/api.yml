@@ -6,6 +6,37 @@ on:
       - '.github/workflows/api.yml'
 
 jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [3.13]
+        uv-version: [0.8.2]
+        os: [ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        working-directory: services/tasks_api
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v3
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          version: ${{ matrix.uv-version }}
+      - name: Initialize uv
+        run: uv venv
+      - name: Install all dependencies
+        run: uv pip install -r pyproject.toml
+      - name: Run tests
+        run: uv run pytest tests.py --cov=./ --cov-report=xml
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+
   code-quality:
     strategy:
       fail-fast: false
