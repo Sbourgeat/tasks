@@ -2,7 +2,6 @@ import pytest
 from fastapi import status
 from starlette.testclient import TestClient
 
-
 from main import app
 
 
@@ -12,7 +11,7 @@ def client():
 
 
 def test_health_check(client):
-    """"
+    """ "
     GIVEN
     WHEN health check endpoint is callend with GET method
     THEN respone with status 200 and body OK is returned
